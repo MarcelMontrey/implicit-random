@@ -1,8 +1,8 @@
-<div class="page" id="2-instructions">
-	<div class="title">Instructions</div>
+<div class="page" id="4-preference">
+	<div class="title">Preference</div>
 
 	<div class="content">
-		<p>Instructions</p>
+		<p>Preference</p>
 	</div>
 	
 	<div class="next">

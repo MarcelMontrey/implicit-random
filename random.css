@@ -44,14 +44,21 @@ div.next {
 
 div.next button {
 	padding:10px 30px;
+	margin: 10px;
 }
 
 div.trial {
 	display: flex;
 }
 
-div.purple, div.blue {
-	width:450px;
+div#middle-div {
+	width:20%;
+}
+
+div#left-div, div#right-div {
+	width:40%;
+	padding:50px;
+	text-align: center;
 }
 
 div.blue button {

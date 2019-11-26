@@ -33,6 +33,20 @@ div.content p {
 	margin: 10px;
 }
 
+div.center {
+	text-align: center;
+}
+
+div.content select {
+	margin: 2px 10px 10px 10px;
+	padding: 2px;
+	min-width: 100px;
+	width: 75%;
+	background-color: #fafafa;
+	border-color: #ccc;
+	font-size:16px;
+}
+
 button, input, select {
 	cursor: pointer;
 	font-size:16px;
@@ -49,10 +63,12 @@ div.next button {
 
 div.trial {
 	display: flex;
+	height:400px;
 }
 
 div#middle-div {
 	width:20%;
+	height:100%;
 }
 
 div#left-div, div#right-div {

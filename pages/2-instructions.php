@@ -2,7 +2,7 @@
 	<div class="title">Instructions</div>
 
 	<div class="content">
-		<p>Instructions</p>
+		<p>Do something</p>
 	</div>
 	
 	<div class="next">

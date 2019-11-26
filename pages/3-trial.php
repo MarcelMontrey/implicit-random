@@ -3,20 +3,14 @@
 
 	<div class="content">
 		<div class="trial">
-			<div id="left-machine">
-				<div id="ran-div">
-					<p><img id="ran-img"></p>
-					<p><button id="ran-btn" onclick="pullRan()">Pull lever</button></p>
-					RAND
-				</div>
+			<div id="left-div">
+				<p><img id="left-img"></p>
+				<p><button id="left-btn" onclick="pullLever(0)">Pull lever</button></p>
 			</div>
 			<div id="training-txt"></div>
-			<div id="right-machine">
-				<div id="det-div">
-					<p><img id="det-img"></p>
-					<p><button id="det-btn" onclick="pullDet()">Pull lever</button></p>
-					DET
-				</div>
+			<div id="right-div">
+				<p><img id="right-img"></p>
+				<p><button id="right-btn" onclick="pullLever(1)">Pull lever</button></p>
 			</div>
 		</div>
 	</div>

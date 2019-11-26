@@ -25,7 +25,7 @@ const DELAY_ROUND = 1000;
 var current = 2;
 var pages = ["1-consent", "2-instructions", "3-trial", "4-preference", "5-randomness", "6-demographics", "7-code"];
 var colors = ["blue", "purple"];
-var order = ["ran", "det"];
+var order = ["rand", "det"];
 var training = "left";
 var trial = 0;
 var streak = 0;
@@ -37,21 +37,20 @@ randColors();
 nextPage();
 
 function randColors() {
-	var randHTML = document.getElementById("left-machine").innerHTML;
-	var detHTML = document.getElementById("right-machine").innerHTML;
+	// Randomize the left-right order of the random and deterministic machines.
 	if(Math.random() < 0.5) {
 		order = order.reverse();
-		document.getElementById("left-machine").innerHTML = detHTML;
-		document.getElementById("right-machine").innerHTML = randHTML;
 	}
 	
+	// Randomize the machine color.
 	if(Math.random() < 0.5) {
 		colors = colors.reverse();
 	}
-	document.getElementById("ran-div").className = colors[0];
-	document.getElementById("det-div").className = colors[1];
-	document.getElementById("ran-img").src = "images/" + colors[0] + "_default.png";
-	document.getElementById("det-img").src = "images/" + colors[1] + "_default.png";
+	
+	document.getElementById("left-div").className = colors[0];
+	document.getElementById("right-div").className = colors[1];
+	document.getElementById("left-img").src = "images/" + colors[0] + "_default.png";
+	document.getElementById("right-img").src = "images/" + colors[1] + "_default.png";
 }
 
 function nextPage() {
@@ -66,51 +65,52 @@ function nextPage() {
 
 function startTraining() {
 	document.getElementById("trial-title").innerHTML = "Round 1/" + N_TRAINING;
-	document.getElementById("right-machine").style.opacity = 0.25;
-	document.getElementById(order[1] + "-btn").disabled = true;
+	document.getElementById("right-div").style.opacity = 0.25;
+	document.getElementById("right-btn").disabled = true;
 }
 
 function startTrials() {
 	document.getElementById("trial-title").innerHTML = "Round 1/" + N_TRIALS;
 }
 
-function pullRan() {
-	document.getElementById("ran-img").src = "images/" + colors[0] + "_active.png";
-	pullEither();
-	if(Math.random() < PROB_RAND) {
-		setTimeout(function() {
-			document.getElementById("ran-img").src = "images/" + colors[0] + "_won.png";
-		}, DELAY_RESULT);
+function pullLever(machine) {
+	var side = (machine == 0) ? "left" : "right";
+	
+	document.getElementById(side + "-img").src = "images/" + colors[machine] + "_active.png";
+	
+	// Disable both buttons.
+	document.getElementById("left-btn").disabled = true;
+	document.getElementById("right-btn").disabled = true;
+	
+	var outcome = "";
+	// Check if the machine is the random or the deterministic one.
+	if(order[machine] == "rand") {
+		// Check if the user won or lost.
+		if(Math.random() < PROB_RAND) {
+			outcome = "won";
+		}
+		else {
+			outcome = "lost";
+		}
 	}
-	else {
-		setTimeout(function() {
-			document.getElementById("ran-img").src = "images/" + colors[0] + "_lost.png";
-		}, DELAY_RESULT);
+	else if(order[machine] == "det") {
+		// Check if the user won or lost. Reset their losing streak if they won.
+		if(Math.random() < PROB_DET || streak == MAX_LOSS) {
+			outcome = "won";
+			streak = 0;
+		}
+		else {
+			outcome = "lost";
+			streak++;
+		}
 	}
-}
-
-function pullDet() {
-	document.getElementById("det-img").src = "images/" + colors[1] + "_active.png";
-	pullEither();
-	if(Math.random() < PROB_DET || streak == MAX_LOSS) {
-		setTimeout(function() {
-			document.getElementById("det-img").src = "images/" + colors[1] + "_won.png";
-		}, DELAY_RESULT);
-		
-		streak = 0;
-	}
-	else {
-		setTimeout(function() {
-			document.getElementById("det-img").src = "images/" + colors[1] + "_lost.png";
-		}, DELAY_RESULT);
-		
-		streak++;
-	}
-}
-
-function pullEither() {
-	document.getElementById("ran-btn").disabled = true;
-	document.getElementById("det-btn").disabled = true;
+	
+	// Show the game's outcome, after an appropriate delay.
+	setTimeout(function() {
+		document.getElementById(side + "-img").src = "images/" + colors[machine] + "_" + outcome + ".png";
+	}, DELAY_RESULT);
+	
+	// Move on to the next round, after an even longer delay.
 	setTimeout(function() {
 		nextRound();
 	}, DELAY_RESULT + DELAY_ROUND);
@@ -120,43 +120,41 @@ function nextRound() {
 	trial++;
 	if(training == "left") {
 		if(trial < N_TRAINING) {
-			document.getElementById(order[0] + "-btn").disabled = false;
-			document.getElementById(order[0] + "-img").src = "images/" + colors[0] + "_default.png";
+			document.getElementById("left-btn").disabled = false;
+			document.getElementById("left-img").src = "images/" + colors[0] + "_default.png";
 		}
 		else {
 			trial = 0;
 			training = "right";
-			document.getElementById(order[1] + "-btn").disabled = false;
-			document.getElementById(order[0] + "-btn").disabled = true;
-			document.getElementById(order[0] + "-img").src = "images/" + colors[0] + "_default.png";
-			document.getElementById("left-machine").style.opacity = 0.25;
-			document.getElementById("right-machine").style.opacity = 1;
+			document.getElementById("right-btn").disabled = false;
+			document.getElementById("left-btn").disabled = true;
+			document.getElementById("left-img").src = "images/" + colors[0] + "_default.png";
+			document.getElementById("left-div").style.opacity = 0.25;
+			document.getElementById("right-div").style.opacity = 1;
 		}
 		document.getElementById("trial-title").innerHTML = "Round " + (trial + 1) + "/" + N_TRAINING;
 	}
-	else if(training = "right") {
+	else if(training == "right") {
 		if(trial < N_TRAINING) {
-			document.getElementById(order[1] + "-btn").disabled = false;
-			document.getElementById(order[1] + "-img").src = "images/" + colors[1] + "_default.png";
+			document.getElementById("right-btn").disabled = false;
+			document.getElementById("right-img").src = "images/" + colors[1] + "_default.png";
 		}
 		else {
 			trial = 0;
 			training = "done";
-			document.getElementById(order[1] + "-btn").disabled = false;
-			document.getElementById(order[0] + "-btn").disabled = false;
-			document.getElementById(order[0] + "-img").src = "images/" + colors[0] + "_default.png";
-			document.getElementById(order[1] + "-img").src = "images/" + colors[1] + "_default.png";
-			document.getElementById("left-machine").style.opacity = 1;
-			document.getElementById("right-machine").style.opacity = 1;
+			document.getElementById("left-btn").disabled = false;
+			document.getElementById("right-btn").disabled = false;
+			document.getElementById("right-img").src = "images/" + colors[1] + "_default.png";
+			document.getElementById("left-div").style.opacity = 1;
 		}
 		document.getElementById("trial-title").innerHTML = "Round " + (trial + 1) + "/" + N_TRAINING;
 	}
 	else if(training == "done" && trial < N_TRIALS) {
 		document.getElementById("trial-title").innerHTML = "Round " + (trial + 1) + "/" + N_TRIALS;
-		document.getElementById("ran-btn").disabled = false;
-		document.getElementById("det-btn").disabled = false;
-		document.getElementById("ran-img").src = "images/" + colors[0] + "_default.png";
-		document.getElementById("det-img").src = "images/" + colors[1] + "_default.png";
+		document.getElementById("left-btn").disabled = false;
+		document.getElementById("right-btn").disabled = false;
+		document.getElementById("left-img").src = "images/" + colors[0] + "_default.png";
+		document.getElementById("right-img").src = "images/" + colors[1] + "_default.png";
 	}
 	else {
 		nextPage();

@@ -1,8 +1,0 @@
-
-
-[identity]
-startTime=1574798794
-assignmentId=
-hitId=
-workerId=
-ip=127.0.0.1

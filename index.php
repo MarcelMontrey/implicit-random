@@ -16,13 +16,13 @@
 <?php include("pages/7-code.php"); ?>
 
 <script type="text/javascript">
-const N_TRAINING = 3;
-const N_TRIALS = 5;
-const PROB_RAND = 0.167;
-const PROB_DET = 0.08;
-const MAX_LOSS = 4;
-const DELAY_RESULT = 500;
-const DELAY_ROUND = 1000;
+const N_TRAINING = 3; // Number of training trials per machine.
+const N_TRIALS = 5; // Number of trials in the task itself.
+const PROB_RAND = 0.167; // Probability of winning on the fully random machine.
+const PROB_DET = 0.08; // Probability of winning on the semi-deterministic machine.
+const MAX_LOSS = 9; // Maximum losing streak on the semi-deterministic machine.
+const DELAY_RESULT = 500; // Delay (in ms) between pulling the lever and seeing the result.
+const DELAY_ROUND = 1000; // Delay (in ms) between the result being shown and moving on to the next round.
 
 var startTime = <?php echo($startTime); ?>; // Start time.
 var assignmentId = "<?php echo($assignmentId); ?>"; // assignmentId via POST.
@@ -31,21 +31,23 @@ var workerId = "<?php echo($workerId); ?>"; // workerId via POST.
 var ip = "<?php echo($ip); ?>"; // IP address.
 var valid = <?php echo($valid); ?>; // -1 if the above weren't passed by POST. 0 if the workerId belongs to an existing participant or a dropout. 1 otherwise.
 
-var current = 0;
-var pages = ["1-consent", "2-instructions", "3-trial", "4-preference", "5-randomness", "6-demographics", "7-code"];
-var colors = ["blue", "purple"];
-var order = ["rand", "det"];
-var training = "";
-var trial = 0;
-var streak = 0;
+var current = 0; // Index of the current page we're on.
+var pages = ["1-consent", "2-instructions", "3-trial", "4-preference", "5-randomness", "6-demographics", "7-code"]; // List of pages we move between.
+var colors = ["blue", "purple"]; // Color of the left and right machines (randomized).
+var order = ["rand", "det"]; // Identity of the left and right machines (randomized).
+var training = ""; // Tracks whether we're training the left machine, right machine, or done training.
+var trial = 0; // Current trial (or training trial) the user is on.
+var streak = 0; // Length of the current losing streak on the semi-deterministic machine.
 
-var choices = [];
-var outcomes = [];
-var winnings = 0;
+var choices = []; // User's choice of machine on each trial.
+var outcomes = []; // User's outcome (win/lose) on each trial.
+var winnings = 0; // User's total winnings.
 
+// Initialize the experiment.
 randColors();
 document.getElementById(pages[0]).style.display = "block";
 
+// 
 function randColors() {
 	// Randomize the left-right order of the random and deterministic machines.
 	if(Math.random() < 0.5) {
@@ -57,6 +59,7 @@ function randColors() {
 		colors = colors.reverse();
 	}
 	
+	// Assign the proper color to each machine.
 	document.getElementById("left-div").className = colors[0];
 	document.getElementById("right-div").className = colors[1];
 	document.getElementById("left-img").src = "images/" + colors[0] + "_default.png";

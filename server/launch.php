@@ -41,18 +41,12 @@ function isValid($startTime, $assignmentId, $hitId, $workerId, $ip) {
 	// Load all user records.
 	$users = User::loadAll();
 
-	// Compare our workerId against each user's.
-	for($condition = 0; $condition < count($users); $condition++) {
-		for($cohort = 0; $cohort < count($users[$condition]); $cohort++) {
-			for($position = 0; $position < count($users[$condition][$cohort]); $position++) {
-				for($group = 0; $group < $N_USERS; $group++) {
-					// If the user already participated, add them to our list of rejects and kick them out.
-					if($users[$condition][$cohort][$position][$group]["workerId"] == $workerId) {
-						Util::appendToFile(dirname(__FILE__) . "/../users/rejected.txt", implode("\t", array($startTime, $assignmentId, $hitId, $workerId, $ip)) . "\n");
-						return 0;
-					}
-				}
-			}
+	// Compare our workerId against each existing user's.
+	for($i = 0; $i < count($users); $i++) {
+		// If the user already participated, add them to our list of rejects and kick them out.
+		if($users[$i]["workerId"] == $workerId) {
+			Util::appendToFile(dirname(__FILE__) . "/../users/rejected.log", implode("\t", array($startTime, $assignmentId, $hitId, $workerId, $ip)) . "\n");
+			return 0;
 		}
 	}
 
@@ -63,13 +57,13 @@ function isValid($startTime, $assignmentId, $hitId, $workerId, $ip) {
 	for($i = 0; $i < count($dropouts); $i++) {
 		// If the dropout already participated, add them to our list of rejects and kick them out.
 		if($dropouts[$i]["workerId"] == $workerId) {
-			Util::appendToFile(dirname(__FILE__) . "/../users/rejected.txt", implode("\t", array($startTime, $assignmentId, $hitId, $workerId, $ip)) . "\n");
+			Util::appendToFile(dirname(__FILE__) . "/../users/rejected.log", implode("\t", array($startTime, $assignmentId, $hitId, $workerId, $ip)) . "\n");
 			return 0;
 		}
 	}
 
 	// If we haven't found any problems, add the user to our list of accepted participants and return valid.
-	Util::appendToFile(dirname(__FILE__) . "/../users/accepted.txt", implode("\t", array($startTime, $assignmentId, $hitId, $workerId, $ip)) . "\n");
+	Util::appendToFile(dirname(__FILE__) . "/../users/accepted.log", implode("\t", array($startTime, $assignmentId, $hitId, $workerId, $ip)) . "\n");
 	return 1;
 }
 
